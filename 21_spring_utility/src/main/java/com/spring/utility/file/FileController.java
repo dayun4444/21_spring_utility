@@ -1,6 +1,7 @@
 package com.spring.utility.file;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -117,6 +118,106 @@ public class FileController {
 		byte[] buffer = new byte[1024 * 8];
 		out.write(buffer);
 		out.close();
+		
+	}
+	
+	// 파일 다운로드 컨트롤러
+	@GetMapping("/download")
+	public void download(@RequestParam("fileName") String fileName ,  HttpServletResponse response) throws Exception {
+        	
+		String filePath = FILE_REPO_PATH + fileName;			
+        	
+    	File file = new File(filePath);
+    	response.setHeader("Content-Disposition", "attachment;filename=" + file.getName()); 
+    	
+    	FileInputStream fileInputStream = new FileInputStream(filePath);
+    	OutputStream out = response.getOutputStream();
+    	
+    	int read = 0;
+        byte[] buffer = new byte[1024];
+        while ((read = fileInputStream.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+        }
+	                
+    }
+	
+	// 파일삭제 컨트롤러
+	@PostMapping("/delete")
+	@ResponseBody
+	public String delete(@RequestParam("fileName") String fileName) {
+		
+		File file = new File(FILE_REPO_PATH + fileName);
+		
+		String result = "";		
+		if (file.exists()) {
+			file.delete();
+			result = "<script>";
+    		result += "alert('success');";
+    		result += "location.href = 'main';";
+    		result += "</script>";
+		}
+		else {
+			result = "<script>";
+    		result += "alert('fail');";
+    		result += "location.href = 'main';";
+    		result += "</script>";
+		}
+		
+		return result;
+	
+	}
+	
+	// 파일 수정하기
+	@PostMapping("/update")
+	@ResponseBody
+	public String update(MultipartHttpServletRequest multipartRequest) throws IllegalStateException, IOException {
+		
+		File file = new File(FILE_REPO_PATH + multipartRequest.getParameter("updateFileName"));
+		
+		String result = "";
+		if (file.exists()) {
+			
+			Iterator<String> fileList = multipartRequest.getFileNames();
+			
+			if (fileList.hasNext()) {
+				
+				MultipartFile uploadFile = multipartRequest.getFile(fileList.next());
+				
+				if (!uploadFile.getOriginalFilename().isEmpty()) {
+					
+					// 파일 삭제
+					file.delete();
+					
+					// 새로운 파일 업로드
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					String uploadDAte = sdf.format(new Date());
+					
+					UUID fileUUID = UUID.randomUUID();
+
+					String fileName = uploadDAte + "_" + fileUUID + "_" + uploadFile.getOriginalFilename();
+					
+					File temp = new File(FILE_REPO_PATH + fileName);
+					uploadFile.transferTo(temp);
+					// uploadFile.transferTo(new File(FILE_REPO_PATH + fileName));
+					
+					result = "<script>";
+		    		result += "alert('success');";
+		    		result += "location.href = 'main';";
+		    		result += "</script>";
+		    		
+				}
+				
+			}
+			
+		}
+		else {
+			result = "<script>";
+    		result += "alert('fail');";
+    		result += "location.href = 'main';";
+    		result += "</script>";
+		}
+		
+		return result;
 		
 	}
 	

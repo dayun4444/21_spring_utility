@@ -44,19 +44,19 @@
 		<tr>
 			<td><img src="${contextPath }/file/thumbnails?fileName=404.PNG" width="200" height="120"/></td>
 			<td>404 이미지</td>
-			<td><a href="">다운로드</a></td>
+			<td><a href="${contextPath }/file/download?fileName=404.PNG">다운로드</a></td>
 		</tr>
 		<tr>
 			<td><img src="${contextPath }/file/thumbnails?fileName=500.PNG" width="200" height="120"/></td>
 			<td>500 이미지</td>
-			<td><a href="">다운로드</a></td>
+			<td><a href="${contextPath }/file/download?fileName=500.PNG">다운로드</a></td>
 		</tr>
 	</table>
 	
 	
 	<hr>
 	
-	<form action="" method="post" >
+	<form action="${contextPath }/file/delete" method="post" >
 		<h1>파일 삭제</h1>
 		<table>			
 			<tr>
@@ -68,7 +68,7 @@
 	
 	<hr>
 	
-	<form>
+	<form action="${contextPath }/file/update" method="post" enctype="multipart/form-data">
 		<h1>파일 수정</h1>
 		<table border="1" >			
 			<tr>
